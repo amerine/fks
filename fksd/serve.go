@@ -34,8 +34,8 @@ func nameerror(w dns.ResponseWriter, m, req *dns.Msg) {
 }
 
 func findGlue(m *dns.Msg, z *dns.Zone, nameserver string) {
-	glue, ok := z.Find(nameserver)
-	if ok {
+	glue := z.Find(nameserver)
+	if glue != nil {
 		if a4, ok := glue.RR[dns.TypeAAAA]; ok {
 			m.Extra = append(m.Extra, a4...)
 			return
@@ -50,8 +50,8 @@ func findGlue(m *dns.Msg, z *dns.Zone, nameserver string) {
 }
 
 func findApex(m *dns.Msg, z *dns.Zone) {
-	apex, exact := z.Find(z.Origin)
-	if exact {
+	apex := z.Apex()
+	if apex != nil {
 		// What if we don't have this? TODO(mg)
 		m.Ns = apex.RR[dns.TypeSOA]
 	}
